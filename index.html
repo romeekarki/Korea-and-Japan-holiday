@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<title>Ghumgham — Family Trip</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#667085;--line:#e7ebf1;--accent:#2563eb}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Arial,sans-serif;color:var(--text)}
+header{padding:22px 18px 16px;background:#111827;color:#fff;position:sticky;top:0;z-index:5}h1{margin:0;font-size:27px}.sub{opacity:.75;margin-top:4px;font-size:13px}
+.count{margin-top:14px;background:rgba(255,255,255,.1);padding:12px 14px;border-radius:14px;font-weight:700}
+nav{display:flex;overflow:auto;gap:8px;padding:10px 12px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:93px;z-index:4}
+nav button{border:0;background:#eef2f7;border-radius:20px;padding:9px 13px;white-space:nowrap;font-weight:600;color:#344054}nav button.active{background:var(--accent);color:#fff}
+main{padding:14px 14px 80px;max-width:760px;margin:auto}.card{background:#fff;border:1px solid var(--line);border-radius:17px;padding:16px;margin:10px 0;box-shadow:0 2px 8px rgba(16,24,40,.04)}
+h2{font-size:19px;margin:4px 0 12px}.title{font-weight:800;font-size:17px}.muted{color:var(--muted);font-size:13px}.row{display:flex;justify-content:space-between;gap:12px;margin:9px 0}
+.pill{display:inline-block;padding:5px 9px;border-radius:9px;background:#eef4ff;color:#175cd3;font-size:12px;font-weight:700}.flight{border-left:4px solid var(--accent)}
+.route{font-size:20px;font-weight:800;margin:7px 0}.time{font-size:16px;font-weight:700}.connect{background:#fff7ed;color:#c2410c;padding:8px;border-radius:10px;font-size:13px;margin-top:10px}
+button.primary,button.secondary,button.danger{border:0;border-radius:11px;padding:10px 13px;font-weight:700}button.primary{background:var(--accent);color:#fff}button.secondary{background:#eef2f7;color:#344054}button.danger{background:#fee2e2;color:#b91c1c}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}textarea,input{width:100%;padding:11px;border:1px solid #d0d5dd;border-radius:10px;font:inherit;margin:5px 0 10px}
+.item{padding:11px 0;border-bottom:1px solid var(--line)}.item:last-child{border-bottom:0}.small{font-size:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}a{color:var(--accent);text-decoration:none;font-weight:700}
+@media(max-width:430px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+<h1>🌏 Ghumgham</h1>
+<div class="sub">Family trip • 2 adults + 2 kids (ages 5 & 7)</div>
+<div class="count" id="countdown">Calculating countdown…</div>
+</header>
+<nav id="tabs">
+<button data-tab="home" class="active">Home</button><button data-tab="flights">✈️ Flights</button>
+<button data-tab="hotels">🏨 Hotels</button><button data-tab="places">🎡 Kids & Places</button>
+<button data-tab="notes">📝 My Notes</button><button data-tab="edit">⚙️ Edit</button>
+</nav>
+<main id="app"></main>
+<script>
+const KEY="ghumgham-trip-v3";
+const initial={
+tripStart:"2026-09-26T06:00:00+09:30",
+tripEnd:"2026-10-11T11:15:00+09:30",
+flights:[
+{date:"26 Sep 2026",no:"QF670",from:"Adelaide (ADL) T1",to:"Melbourne (MEL) T1",dep:"06:00 ACST",arr:"07:50 AEST",duration:"1h 20m",note:"Connection to QF29: 2h 25m. Published schedule.",source:"Flight schedule checked Sep 2026"},
+{date:"26 Sep 2026",no:"QF29",from:"Melbourne (MEL) T2",to:"Hong Kong (HKG) T1",dep:"10:15 AEST",arr:"17:55 HKT",duration:"9h 40m",note:"Connection to QF8233: 1h 50m. Published schedule.",source:"Flight.info schedule"},
+{date:"26 Sep 2026",no:"QF8233",from:"Hong Kong (HKG) T1",to:"Seoul Incheon (ICN) T1",dep:"19:45 HKT",arr:"00:25 KST (+1 day)",duration:"3h 40m",note:"Arrives 27 Sep. Published schedule; operated by Cathay Pacific.",source:"Airportia schedule"},
+{date:"30 Sep 2026",no:"DU74U7",from:"Seoul",to:"Osaka",dep:"Add exact time",arr:"Add exact time",duration:"Add exact duration",note:"Booking reference. Enter exact airline, flight number, airports and times from your booking.",source:"Your booking reference"},
+{date:"10 Oct 2026",no:"QF80",from:"Tokyo Narita (NRT) T2",to:"Melbourne (MEL) T2",dep:"20:25 JST",arr:"08:40 AEST (+1 day)",duration:"10h 15m",note:"Arrives Melbourne on 11 Oct. Connection to QF679: 1h 45m; terminal change T2 → T1.",source:"Qantas schedule for Oct 2026"},
+{date:"11 Oct 2026",no:"QF679",from:"Melbourne (MEL) T1",to:"Adelaide (ADL) T1",dep:"10:25 AEST",arr:"11:15 ACST",duration:"1h 20m",note:"Trip ends in Adelaide on 11 Oct, not 10 Oct.",source:"Qantas schedule"}
+],
+hotels:[
+{city:"Seoul",hotel:"NINE TREE by Parnas Seoul Dongdaemun",checkin:"27 Sep 2026",checkout:"30 Sep 2026",nights:"3"},
+{city:"Osaka",hotel:"Osaka View Hotel Honmachi",checkin:"30 Sep 2026",checkout:"03 Oct 2026",nights:"3"},
+{city:"Kyoto",hotel:"RIHGA Royal Hotel Kyoto",checkin:"03 Oct 2026",checkout:"06 Oct 2026",nights:"3"},
+{city:"Tokyo",hotel:"sequence SUIDOBASHI",checkin:"06 Oct 2026",checkout:"10 Oct 2026",nights:"4"}
+],
+places:{
+"Seoul":["Gyeongbokgung Palace","COEX Aquarium","Lotte World","N Seoul Tower","Bukchon Hanok Village"],
+"Osaka":["Universal Studios Japan","Osaka Aquarium Kaiyukan","Kids Plaza Osaka","Osaka Castle Park","Dotonbori"],
+"Kyoto":["Kyoto Railway Museum","Arashiyama Bamboo Grove","Monkey Park Iwatayama","Fushimi Inari","Kiyomizu-dera"],
+"Tokyo":["Tokyo Disneyland","Tokyo DisneySea","Ueno Zoo","teamLab Borderless","Tokyo Skytree","Asakusa / Senso-ji"]
+},
+notes:[]
+};
+let data=JSON.parse(localStorage.getItem(KEY)||"null")||initial;
+function save(){localStorage.setItem(KEY,JSON.stringify(data))}
+function countdown(){
+const el=document.getElementById("countdown"),start=new Date(data.tripStart),now=new Date();let ms=start-now;
+if(ms<=0){el.textContent="🎉 The trip has started!";return}
+let d=Math.floor(ms/86400000);ms-=d*86400000;let h=Math.floor(ms/3600000);ms-=h*3600000;let m=Math.floor(ms/60000);
+el.textContent=`✈️ Trip starts in ${d}d ${h}h ${m}m`;
+}
+setInterval(countdown,30000);countdown();
+function cardFlight(f){
+return `<div class="card flight"><div class="row"><span class="pill">${f.date}</span><b>${f.no}</b></div>
+<div class="route">${f.from} → ${f.to}</div><div class="grid"><div><div class="muted">Departure</div><div class="time">${f.dep}</div></div><div><div class="muted">Arrival</div><div class="time">${f.arr}</div></div></div>
+<div class="row"><span>Flight time</span><b>${f.duration}</b></div><div class="connect">ℹ️ ${f.note}</div><div class="small muted" style="margin-top:8px">Source: ${f.source}</div></div>`;
+}
+function render(tab="home"){
+let a=document.getElementById("app");
+if(tab==="home")a.innerHTML=`<div class="card"><h2>🇰🇷 Seoul → 🇯🇵 Japan Family Adventure</h2><div class="muted">26 September – 11 October 2026</div>
+<div class="grid" style="margin-top:12px"><div><b>4 travellers</b><div class="muted">2 adults + 2 kids</div></div><div><b>4 cities</b><div class="muted">Seoul • Osaka • Kyoto • Tokyo</div></div></div></div>
+<div class="card"><h2>🗓️ Trip at a glance</h2><div class="item"><b>26 Sep</b> — Adelaide → Melbourne → Hong Kong → Seoul</div><div class="item"><b>30 Sep</b> — Seoul → Osaka</div><div class="item"><b>03 Oct</b> — Osaka → Kyoto by train</div><div class="item"><b>06 Oct</b> — Kyoto → Tokyo by train</div><div class="item"><b>10 Oct</b> — Tokyo → Melbourne</div><div class="item"><b>11 Oct</b> — Melbourne → Adelaide</div></div>
+<div class="card"><h2>⚠️ Return-date note</h2><div>QF80 leaves Tokyo on <b>10 Oct</b> but arrives Melbourne on <b>11 Oct</b>. QF679 then arrives Adelaide at <b>11:15 ACST on 11 Oct</b>. Your actual trip finish is therefore <b>11 Oct 2026</b>.</div></div>
+<div class="card"><h2>🧳 Family quick check</h2><div class="item">Passports & travel documents</div><div class="item">Flight and hotel confirmations</div><div class="item">Kids' medicines / essentials</div><div class="item">Chargers & power bank</div><div class="item">Snacks & comfort items</div><div class="item">Travel insurance details</div></div>`;
+if(tab==="flights")a.innerHTML=`<h2>✈️ Flights & connections</h2>${data.flights.map(cardFlight).join("")}<div class="card"><b>Important:</b> Flight times are scheduled times and can change. The DU74U7 item is intentionally editable because a booking reference by itself does not safely identify the exact flight schedule.</div>`;
+if(tab==="hotels")a.innerHTML=`<h2>🏨 Hotels</h2>${data.hotels.map(h=>`<div class="card"><span class="pill">${h.city}</span><h2>${h.hotel}</h2><div class="row"><span>Check-in</span><b>${h.checkin}</b></div><div class="row"><span>Check-out</span><b>${h.checkout}</b></div><div class="row"><span>Nights</span><b>${h.nights}</b></div><div class="actions"><button class="secondary" onclick="openMaps('${h.hotel}')">📍 Map</button></div></div>`).join("")}`;
+if(tab==="places")a.innerHTML=`<h2>🎡 Kid-friendly places</h2>${Object.entries(data.places).map(([city,arr])=>`<div class="card"><h2>${city}</h2>${arr.map(x=>`<div class="item"><b>${x}</b><div class="actions"><button class="secondary" onclick="openMaps('${x} ${city}')">📍 Map</button></div></div>`).join("")}</div>`).join("")}`;
+if(tab==="notes")a.innerHTML=`<h2>📝 My Notes</h2><div class="card"><textarea id="newnote" rows="4" placeholder="Add restaurants, train times, bookings, attractions, packing items, or anything else…"></textarea><button class="primary" onclick="addNote()">Add note</button></div>${data.notes.length?data.notes.map((n,i)=>`<div class="card"><div>${escapeHtml(n.text)}</div><div class="muted small">${n.date}</div><div class="actions"><button class="danger" onclick="deleteNote(${i})">Delete</button></div></div>`).join(""):`<div class="card muted">No notes yet.</div>`}`;
+if(tab==="edit")a.innerHTML=`<h2>⚙️ Edit Ghumgham</h2><div class="card"><h2>Trip dates</h2><label>Trip start</label><input id="tripStart" value="${data.tripStart}"><label>Trip end</label><input id="tripEnd" value="${data.tripEnd}"><button class="primary" onclick="saveDates()">Save dates</button></div>
+<div class="card"><h2>Edit Seoul → Osaka</h2><input id="duNo" placeholder="Flight number" value="${data.flights[3].no}"><input id="duFrom" placeholder="From" value="${data.flights[3].from}"><input id="duTo" placeholder="To" value="${data.flights[3].to}"><input id="duDep" placeholder="Departure time" value="${data.flights[3].dep}"><input id="duArr" placeholder="Arrival time" value="${data.flights[3].arr}"><input id="duDur" placeholder="Duration" value="${data.flights[3].duration}"><button class="primary" onclick="saveDU()">Save flight</button></div>
+<div class="card"><h2>Add anything</h2><div class="muted">Use My Notes while travelling. Notes are saved on this iPhone in the app's local storage.</div><div class="actions"><button class="secondary" onclick="render('notes')">Open My Notes</button></div></div>
+<div class="card"><h2>Reset</h2><button class="danger" onclick="resetData()">Reset original trip</button></div>`;
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function addNote(){let x=document.getElementById("newnote").value.trim();if(!x)return;data.notes.unshift({text:x,date:new Date().toLocaleString()});save();render("notes")}
+function deleteNote(i){data.notes.splice(i,1);save();render("notes")}
+function saveDates(){data.tripStart=document.getElementById("tripStart").value;data.tripEnd=document.getElementById("tripEnd").value;save();countdown();render("edit")}
+function saveDU(){let f=data.flights[3];f.no=document.getElementById("duNo").value;f.from=document.getElementById("duFrom").value;f.to=document.getElementById("duTo").value;f.dep=document.getElementById("duDep").value;f.arr=document.getElementById("duArr").value;f.duration=document.getElementById("duDur").value;save();render("edit")}
+function resetData(){if(confirm("Reset Ghumgham?")){data=JSON.parse(JSON.stringify(initial));save();render("home")}}
+function openMaps(q){window.open("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q),"_blank")}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active");render(b.dataset.tab)});
+render();
+</script>
+</body></html>
