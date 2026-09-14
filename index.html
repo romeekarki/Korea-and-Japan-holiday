@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<title>Ghumgham</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f7fb;color:#172033;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",Arial,sans-serif}
+header{background:#111827;color:#fff;padding:20px 16px 15px;position:sticky;top:0;z-index:5}h1{margin:0;font-size:28px}.sub{opacity:.75;font-size:13px;margin-top:3px}
+#count{margin-top:12px;background:#ffffff18;padding:11px 13px;border-radius:13px;font-weight:700}
+nav{display:flex;gap:7px;overflow:auto;padding:9px;background:#fff;position:sticky;top:91px;z-index:4;border-bottom:1px solid #e5e7eb}
+nav button{border:0;background:#eef2f7;padding:9px 12px;border-radius:20px;white-space:nowrap;font-weight:700;color:#344054}nav .on{background:#2563eb;color:#fff}
+main{max-width:760px;margin:auto;padding:12px 13px 70px}.card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:15px;margin:9px 0;box-shadow:0 2px 7px #00000008}
+h2{font-size:19px;margin:2px 0 10px}.muted{color:#667085;font-size:13px}.row{display:flex;justify-content:space-between;gap:12px;margin:8px 0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pill{display:inline-block;background:#eef4ff;color:#175cd3;padding:5px 8px;border-radius:9px;font-size:12px;font-weight:800}
+.route{font-size:19px;font-weight:800;margin:8px 0}.flight{border-left:4px solid #2563eb}.warn{background:#fff7ed;color:#c2410c;padding:9px;border-radius:10px;font-size:13px}
+.item{padding:10px 0;border-bottom:1px solid #edf0f4}.item:last-child{border-bottom:0}
+button.primary,button.secondary,button.danger{border:0;border-radius:10px;padding:10px 12px;font-weight:800}button.primary{background:#2563eb;color:white}button.secondary{background:#eef2f7;color:#344054}button.danger{background:#fee2e2;color:#b91c1c}
+.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}input,select,textarea{width:100%;padding:10px;border:1px solid #d0d5dd;border-radius:10px;font:inherit;margin:4px 0 9px}
+.stat{font-size:24px;font-weight:850}.small{font-size:12px}@media(max-width:430px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><h1>🌏 Ghumgham</h1><div class="sub">Family trip • 2 adults + 2 kids (5 & 7)</div><div id="count">Loading countdown…</div></header>
+<nav id="nav"></nav><main id="app"></main>
+<script>
+const KEY="ghumgham-v5";
+const original={
+start:"2026-09-26T06:00:00+09:30",end:"2026-10-11T11:15:00+09:30",
+flights:[
+["26 Sep","QF670","Adelaide ADL T1","Melbourne MEL T1","06:00 ACST","07:50 AEST","1h 20m","Connection to QF29: 2h 25m"],
+["26 Sep","QF29","Melbourne MEL T2","Hong Kong HKG T1","10:15 AEST","17:55 HKT","9h 40m","Connection to QF8233: 1h 50m"],
+["26 Sep","QF8233","Hong Kong HKG T1","Seoul ICN T1","19:45 HKT","00:25 KST (+1)","3h 40m","Arrives 27 Sep; operated by Cathay Pacific"],
+["30 Sep","DU74U7","Seoul","Osaka","Add exact time","Add exact time","Add duration","Booking reference — add exact flight details"],
+["10 Oct","QF80","Tokyo Narita NRT T2","Melbourne MEL T2","20:25 JST","08:40 AEST (+1)","10h 15m","Arrives 11 Oct; connection to QF679: 1h 45m"],
+["11 Oct","QF679","Melbourne MEL T1","Adelaide ADL T1","10:25 AEST","11:15 ACST","1h 20m","Trip ends in Adelaide 11 Oct"]
+],
+hotels:[
+["Seoul","NINE TREE by Parnas Seoul Dongdaemun","27 Sep","30 Sep","3"],
+["Osaka","Osaka View Hotel Honmachi","30 Sep","03 Oct","3"],
+["Kyoto","RIHGA Royal Hotel Kyoto","03 Oct","06 Oct","3"],
+["Tokyo","sequence SUIDOBASHI","06 Oct","10 Oct","4"]],
+places:{
+Seoul:["Gyeongbokgung Palace","COEX Aquarium","Lotte World","N Seoul Tower","Bukchon Hanok Village"],
+Osaka:["Universal Studios Japan","Osaka Aquarium Kaiyukan","Kids Plaza Osaka","Osaka Castle Park","Dotonbori"],
+Kyoto:["Kyoto Railway Museum","Arashiyama Bamboo Grove","Monkey Park Iwatayama","Fushimi Inari","Kiyomizu-dera"],
+Tokyo:["Tokyo Disneyland","Tokyo DisneySea","Ueno Zoo","teamLab Borderless","Tokyo Skytree","Asakusa / Senso-ji"]},
+expenses:[],transport:[],notes:[],
+rates:{KRW:0.00098,JPY:0.0091,HKD:0.20}
+};
+let d=JSON.parse(localStorage.getItem(KEY)||"null")||original;
+function save(){localStorage.setItem(KEY,JSON.stringify(d))}
+function esc(x){return String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function countdown(){let m=new Date(d.start)-new Date(),e=document.getElementById("count");if(m<=0){e.textContent="🎉 Trip started!";return}let x=Math.floor(m/86400000);m%=86400000;let h=Math.floor(m/3600000);m%=3600000;let mi=Math.floor(m/60000);e.textContent=`✈️ Trip starts in ${x}d ${h}h ${mi}m`}
+setInterval(countdown,30000);countdown();
+
+const tabs=[["home","🏠 Home"],["flights","✈️ Flights"],["hotels","🏨 Hotels"],["transport","🚆 Transport"],["expenses","💰 Expenses"],["exchange","💱 Exchange"],["places","🎡 Kids & Places"],["notes","📝 Notes"],["edit","⚙️ Edit"]];
+function nav(active){document.getElementById("nav").innerHTML=tabs.map(x=>`<button class="${x[0]==active?"on":""}" onclick="show('${x[0]}')">${x[1]}</button>`).join("")}
+function show(tab){nav(tab);let a=document.getElementById("app");
+if(tab=="home")a.innerHTML=`<div class="card"><h2>🇰🇷 Korea → 🇯🇵 Japan</h2><div class="muted">26 September – 11 October 2026</div><div class="grid" style="margin-top:12px"><div><b>4 travellers</b><div class="muted">2 adults + 2 kids</div></div><div><b>4 cities</b><div class="muted">Seoul • Osaka • Kyoto • Tokyo</div></div></div></div>
+<div class="card"><h2>🗓️ At a glance</h2>${[["26 Sep","Adelaide → Melbourne → Hong Kong → Seoul"],["30 Sep","Seoul → Osaka"],["03 Oct","Osaka → Kyoto by train"],["06 Oct","Kyoto → Tokyo by train"],["10 Oct","Tokyo → Melbourne"],["11 Oct","Melbourne → Adelaide"]].map(x=>`<div class="item"><b>${x[0]}</b> — ${x[1]}</div>`).join("")}</div>
+<div class="card"><h2>💰 Spending</h2><div class="stat">A$${totalAUD().toFixed(2)}</div><div class="muted">${d.expenses.length} recorded expenses</div><div class="actions"><button class="primary" onclick="show('expenses')">Add expense</button><button class="secondary" onclick="show('exchange')">Currency converter</button></div></div>
+<div class="card"><h2>⚠️ Return date</h2>QF80 leaves Tokyo on 10 Oct but arrives Melbourne on 11 Oct; QF679 arrives Adelaide at <b>11:15 ACST on 11 Oct</b>.</div>`;
+if(tab=="flights")a.innerHTML=`<h2>✈️ Flights & connections</h2>${d.flights.map(f=>`<div class="card flight"><div class="row"><span class="pill">${f[0]}</span><b>${esc(f[1])}</b></div><div class="route">${esc(f[2])} → ${esc(f[3])}</div><div class="grid"><div><div class="muted">Departure</div><b>${esc(f[4])}</b></div><div><div class="muted">Arrival</div><b>${esc(f[5])}</b></div></div><div class="row"><span>Flight time</span><b>${esc(f[6])}</b></div><div class="warn">ℹ️ ${esc(f[7])}</div></div>`).join("")}<div class="card muted">Published schedules can change. DU74U7 remains editable because a booking reference alone does not identify its exact flight schedule.</div>`;
+if(tab=="hotels")a.innerHTML=`<h2>🏨 Hotels</h2>${d.hotels.map(h=>`<div class="card"><span class="pill">${h[0]}</span><h2>${h[1]}</h2><div class="row"><span>Check-in</span><b>${h[2]}</b></div><div class="row"><span>Check-out</span><b>${h[3]}</b></div><div class="row"><span>Nights</span><b>${h[4]}</b></div><button class="secondary" onclick="maps('${h[1]}')">📍 Map</button></div>`).join("")}`;
+if(tab=="places")a.innerHTML=`<h2>🎡 Family-friendly places</h2>${Object.entries(d.places).map(([c,p])=>`<div class="card"><h2>${c}</h2>${p.map(x=>`<div class="item"><b>${x}</b><div class="actions"><button class="secondary" onclick="maps('${x} ${c}')">📍 Map</button></div></div>`).join("")}</div>`).join("")}`;
+if(tab=="transport")transport(a);
+if(tab=="expenses")expenses(a);
+if(tab=="exchange")exchange(a);
+if(tab=="notes")notes(a);
+if(tab=="edit")edit(a);
+}
+function transport(a){a.innerHTML=`<h2>🚆 Transport</h2><div class="card"><h2>Add transport</h2><select id="tt"><option>Train</option><option>Subway / Metro</option><option>Bus</option><option>Taxi / Uber</option><option>Airport transfer</option><option>Walking</option><option>Other</option></select><input id="td" placeholder="Date"><input id="tf" placeholder="From / station"><input id="tx" placeholder="To / station"><input id="tm" placeholder="Time / service / platform"><input id="tc" type="number" step="0.01" placeholder="Cost (AUD, optional)"><input id="tr" placeholder="Booking/reference (optional)"><button class="primary" onclick="addTransport()">Add</button></div>${d.transport.map((x,i)=>`<div class="card"><span class="pill">${esc(x.type)}</span><div class="row"><b>${esc(x.from)} → ${esc(x.to)}</b><b>${x.cost?`A$${Number(x.cost).toFixed(2)}`:""}</b></div><div class="muted">${esc(x.date)} • ${esc(x.more)} ${x.ref?"• Ref "+esc(x.ref):""}</div><button class="danger" onclick="delTransport(${i})">Delete</button></div>`).join("")}`}
+function addTransport(){d.transport.unshift({type:tt.value,date:td.value,from:tf.value,to:tx.value,more:tm.value,cost:tc.value,ref:tr.value});save();show("transport")}
+function delTransport(i){d.transport.splice(i,1);save();show("transport")}
+function totalAUD(){return d.expenses.reduce((s,x)=>s+Number(x.aud||0),0)}
+function expenses(a){a.innerHTML=`<h2>💰 Expenses</h2><div class="card"><div class="stat">A$${totalAUD().toFixed(2)}</div><div class="muted">Total recorded spending</div></div><div class="card"><h2>Add expense</h2><input id="edate" placeholder="Date"><input id="ename" placeholder="What did you pay for?"><select id="ecat"><option>Food</option><option>Hotel</option><option>Transport</option><option>Attraction</option><option>Shopping</option><option>Other</option></select><input id="eamt" type="number" step="0.01" placeholder="Amount"><select id="ecur"><option>AUD</option><option>KRW</option><option>JPY</option><option>HKD</option></select><button class="primary" onclick="addExpense()">Add expense</button></div>${d.expenses.map((x,i)=>`<div class="card"><div class="row"><b>${esc(x.name)}</b><b>A$${Number(x.aud).toFixed(2)}</b></div><div class="muted">${esc(x.date)} • ${esc(x.cat)} • ${x.amount} ${x.currency}</div><button class="danger" onclick="delExpense(${i})">Delete</button></div>`).join("")}`}
+function addExpense(){let amount=Number(eamt.value),cur=ecur.value,rate=cur=="AUD"?1:d.rates[cur];d.expenses.unshift({date:edate.value,name:ename.value,cat:ecat.value,amount,currency:cur,aud:amount*rate});save();show("expenses")}
+function delExpense(i){d.expenses.splice(i,1);save();show("expenses")}
+function exchange(a){a.innerHTML=`<h2>💱 Exchange rates</h2><div class="card"><div class="muted">Manual rates: 1 foreign-currency unit = AUD. Update these when you have a current rate.</div>${["KRW","JPY","HKD"].map(c=>`<div class="row"><b>1 ${c}</b><input style="max-width:145px;margin:0" id="r${c}" value="${d.rates[c]}"></div>`).join("")}<button class="primary" onclick="saveRates()">Save rates</button></div><div class="card"><h2>Converter to AUD</h2><input id="cv" type="number" step="0.01" placeholder="Amount"><select id="cc"><option>KRW</option><option>JPY</option><option>HKD</option><option>AUD</option></select><div id="out" class="stat">—</div><button class="primary" onclick="convert()">Convert</button></div>`}
+function saveRates(){["KRW","JPY","HKD"].forEach(c=>d.rates[c]=Number(document.getElementById("r"+c).value));save();show("exchange")}
+function convert(){let c=cc.value,n=Number(cv.value);out.textContent="A$"+(n*(c=="AUD"?1:d.rates[c])).toFixed(2)}
+function notes(a){a.innerHTML=`<h2>📝 My Notes</h2><div class="card"><textarea id="note" rows="4" placeholder="Add booking, restaurant, train time, itinerary, packing item…"></textarea><button class="primary" onclick="addNote()">Add note</button></div>${d.notes.map((x,i)=>`<div class="card">${esc(x.text)}<div class="muted small">${esc(x.date)}</div><button class="danger" onclick="delNote(${i})">Delete</button></div>`).join("")||'<div class="card muted">No notes yet.</div>`}
+function addNote(){let x=note.value.trim();if(!x)return;d.notes.unshift({text:x,date:new Date().toLocaleString()});save();show("notes")}
+function delNote(i){d.notes.splice(i,1);save();show("notes")}
+function edit(a){let f=d.flights[3];a.innerHTML=`<h2>⚙️ Edit trip</h2><div class="card"><h2>Seoul → Osaka</h2><input id="efno" value="${esc(f[1])}" placeholder="Flight number"><input id="effrom" value="${esc(f[2])}" placeholder="From"><input id="efto" value="${esc(f[3])}" placeholder="To"><input id="efdep" value="${esc(f[4])}" placeholder="Departure"><input id="efarr" value="${esc(f[5])}" placeholder="Arrival"><input id="efdur" value="${esc(f[6])}" placeholder="Duration"><button class="primary" onclick="saveFlight()">Save flight</button></div><div class="card"><h2>Trip dates</h2><input id="st" value="${d.start}"><input id="en" value="${d.end}"><button class="primary" onclick="saveDates()">Save dates</button></div><div class="card"><button class="danger" onclick="resetAll()">Reset all app data</button></div>`}
+function saveFlight(){let f=d.flights[3];f[1]=efno.value;f[2]=effrom.value;f[3]=efto.value;f[4]=efdep.value;f[5]=efarr.value;f[6]=efdur.value;f[7]="Edited by you";save();show("flights")}
+function saveDates(){d.start=st.value;d.end=en.value;save();countdown();show("home")}
+function resetAll(){if(confirm("Reset all Ghumgham data?")){d=JSON.parse(JSON.stringify(original));save();show("home")}}
+function maps(q){window.open("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q),"_blank")}
+show("home");
+</script></body></html>
